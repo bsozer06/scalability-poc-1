@@ -1,3 +1,17 @@
-FROM alpine
-RUN apk add --no-cache apache2-utils
-ENTRYPOINT ["ab"]
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir uvicorn fastapi
+
+# Copy application code
+COPY . .
+
+# Make start.sh executable
+RUN chmod +x /app/start.sh
+
+# Run the app with Uvicorn
+CMD ["/bin/sh", "/app/start.sh"]
